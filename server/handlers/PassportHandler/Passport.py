@@ -13,7 +13,7 @@ class Version(BaseHandler):
 
 class Token(BaseHandler):
   def post(self):
-    pws = dict(pw0='jy', pw1='0926', pw2='0826',)
+    pws = dict(pw0='***********', pw1='*********', pw2='******************',)
     if pws == self.json_args['pws']:
       self.set_secure_cookie('j', 't', expires_days=None)
       self.write('1')

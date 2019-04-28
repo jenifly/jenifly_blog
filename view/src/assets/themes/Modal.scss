@@ -1,0 +1,42 @@
+@import 'mixin';
+.jy-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000;
+  display: flex;
+  background: rgba(0,0,0,0.3);
+  .jy-modal-content {
+    pointer-events: auto;
+    background-color: #e2e2de;
+    margin: 12% auto auto auto;
+    min-width: 360px;
+    min-height: 140px;
+    border-radius: 8px;
+    height: auto;
+    padding: 0;
+    position: relative;
+    border: 1px solid #e2e2de;
+    @include prefixer(box-shadow, 0 1px 4px rgba(0, 0, 0, 0.2));
+  }
+  h3 {
+    margin: .5em 0;
+    padding: 0 .5em;
+  }
+  .jy-modal-body {
+    padding: 0 10px 46px 10px;
+  }
+  .jy-modal-footer {
+    position: absolute;
+    bottom: 0;
+    width: calc(100% - 12px);
+    height: 46px;
+    text-align: right;
+    padding: 0 6px;
+  }
+  .jy-btn {
+    width: 60px;
+  }
+}

@@ -9,7 +9,7 @@ from tornado.options import define, options
 from tornado.web import RequestHandler
 from urls import handlers
 
-define("port", type=int, default=80, help="run server on the give port")
+define("port", type=int, default=2266, help="run server on the give port")
 		
 class Application(tornado.web.Application):
 	def __init__(self, *args, **kwargs):

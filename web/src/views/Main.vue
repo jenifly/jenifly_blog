@@ -69,7 +69,7 @@ export default {
     },
     show (d) {
       d._watch += 1
-      this.$router.push({path: 'article', query: {id: d._id, title: encodeURIComponent(d._title)}})
+      this.$router.push({path: 'article', query: {id: d._id}})
     }
   }
 }

@@ -33,7 +33,7 @@ export default {
         if(this.pws[t].split().length = 0) return
         this.pws[t] = this.pws[t].toString()
       }
-      this.Util.doPost('api/token', {pws: this.pws}, (res)=>{
+      this.Util.request.doPost('api/token', {pws: this.pws}, (res)=>{
         if(res)
           return this.$router.replace('index')
         this.info = 'Token校验失败，当前ip被锁定，今日还可重试2次！'

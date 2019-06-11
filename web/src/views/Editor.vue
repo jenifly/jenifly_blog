@@ -1,7 +1,7 @@
 <template>
 <div class="content">
   <h2 style="margin-top:0;">Markdown编辑器</h2>
-  <mavon-editor id="editor" :toolbars="toolbars" :defaultOpen="subfield?'':'edit'" :subfield="subfield" @fullScreen="fullScreen" @imgAdd="$imgAdd" @imgDel="$imgDel" @save="save" :tabSize="2" v-model="mdSter"/>
+  <mavon-editor id="editor" :toolbars="toolbars" :defaultOpen="subfield?'':'edit'" :style="full?{height:'100vh'}:''" :subfield="subfield" @fullScreen="fullScreen" @imgAdd="$imgAdd" @imgDel="$imgDel" @save="save" :tabSize="2" v-model="mdSter"/>
   <div class="wallpaper" v-if="upload||showChoice||download" @click.self="showChoice=false" :style="upload?{'pointer-events':'none'}:''">
     <div class="info" v-if="showChoice">
       <h3 style="padding-left:20px;">{{ choice }}</h3>

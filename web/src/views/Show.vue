@@ -56,8 +56,8 @@ export default {
     this.height = window.innerHeight
     this.s_height(this)
     if(!this.tags) this.setTags()
-    if(!this.articleTime) this.setArticleTime(8)
-    if(!this.articleWatch) this.setArticleWatch(8)
+    if(!this.articleTime) this.setArticleTime(6)
+    if(!this.articleWatch) this.setArticleWatch(6)
     if(!this.$route.query.id) return this.$router.replace({path:'error',query:{status_code: '405'}})
     this.loadData()
   },

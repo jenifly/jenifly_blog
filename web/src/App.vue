@@ -25,15 +25,6 @@ import Footer from '@/components/Footer'
 import { mapState, mapActions } from 'vuex'
 export default {
   components: {Header, Footer},
-  created () {
-    if(!this.index) this.setIndex()
-  },
-  computed:{
-    ...mapState(['index'])
-  },
-  methods: {
-    ...mapActions(['setIndex'])
-  }
 }
 </script>
 

@@ -11,19 +11,13 @@
         </ul>
       </div><!-- misc -->
       <p class="licence">
-        {{ index.b }}
+        {{ $store.getters.homepage.b }}
       </p>
     </div><!-- unit-foot-inner -->
   </div><!-- unit-foot -->
 </footer>
 </template>
 <script>
-import { mapState } from 'vuex'
-export default {
-  computed:{
-    ...mapState(['index'])
-  }
-}
 </script>
 <style scoped>
 .licence {

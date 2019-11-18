@@ -1,35 +1,22 @@
 import functools
+import logging
+import hashlib
+import os
 
-from utils.response_code import RET
+from typing import Type
+from tornado.escape import utf8
+
+from config import ufiles_path
 
 def required_login(fun):
-  # 保证被装饰的函数对象的__name__不变
-  @functools.wraps(fun)
-  def wrapper(request_handler_obj, *args, **kwargs):
-    # 调用get_current_user方法判断用户是否登录
-    if request_handler_obj.isLogin():
-      fun(request_handler_obj, *args, **kwargs)
-    else:
-      request_handler_obj.write(dict(msgcode=RET.SESSIONERR, msg="请先登录！"))
-  return wrapper
+    @functools.wraps(fun)
+    async def wrapper(handler: Type['ApiHandler'] = None, *args, **kwargs):
+        if handler.current_user:
+            await fun(handler, *args, **kwargs)
+        else:
+            handler.write(4102)
+    return wrapper
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def encryption(context: str = None) -> bytes:
+    return hashlib.sha256(utf8(context)).hexdigest()

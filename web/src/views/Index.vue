@@ -10,8 +10,8 @@
 
   <div class="bd">
     <div class="entry-content">
-      <p>{{index.t}}</p>
-      <div v-for="(v, k) in index.m">
+      <p>{{ $store.getters.homepage.t }}</p>
+      <div v-for="(v, k) in $store.getters.homepage.m">
         <h2>{{ k }}</h2>
         <p>{{ v }}</p>
       </div>
@@ -29,12 +29,6 @@
 </div>
 </template>
 <script>
-import { mapState } from 'vuex'
-export default {
-  computed:{
-    ...mapState(['index'])
-  }
-}
 </script>
 
 <style>

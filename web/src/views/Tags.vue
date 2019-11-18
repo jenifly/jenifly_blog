@@ -12,15 +12,15 @@
   <div class="bd">
     <div v-if="!only" class="entry-content">
       <div class="tag_box" style="margin-bottom:1em">
-       <Button @click="onlyHandler(t._text)" v-for="t in tags" :text="t._text" :count="t._count"/>
+       <Button @click="onlyHandler(t.text)" v-for="t in $store.getters.tag.tags" :text="t.text" :count="t.count"/>
       </div>
-      <div v-for="(v, k) in tagsArticle">
+      <div v-for="(v, k) in $store.getters.tag.articles">
         <h3>{{k}}</h3>
         <ul>
-          <li @click="show(i)" v-for="i in v"><a>{{i._title}}</a><span style="float:right;font-size:14px">watch:{{i._watch}}</span></li>
+          <li @click="show(i)" v-for="i in v"><a>{{i.title}}</a><span style="float:right;font-size:14px">watch:{{i.watch}}</span></li>
         </ul>
       </div>
-    </div><!-- entry-content -->
+    </div>
     <div v-if="only" class="entry-content">
       <div style="margin-bottom:10px;">
         <span class="all" @click="only=''">Back</span>
@@ -42,8 +42,8 @@
         <li @click="show(i)" v-for="i in onlyData"><a>{{i._title}}</a><span style="float:right;font-size:14px">watch:{{i._watch}}</span></li>
       </ul>
       <Page :count="count" :len="len" :order="order" @pageChange="pageChange"/>
-    </div><!-- entry-content -->
-  </div><!-- bd -->
+    </div>
+  </div>
 
   <footer class="unit-foot">
     <div class="unit-inner unit-foot-inner">
@@ -71,19 +71,19 @@ export default {
       order: 'watch'
     }
   },
-  created () {
-    this.limit = `0,${this.len}`
-    if(!this.tags) this.setTags()
-  },
+  // created () {
+  //   this.limit = `0,${this.len}`
+  //   if(!this.tags) this.setTags()
+  // },
   activated () {
     this.only = this.$route.params.tagName
     if(this.only) this.loadData()
   },
-  computed:{
-    ...mapState(['tags','tagsArticle']),
-  },
+  // computed:{
+  //   ...mapState(['tags','tagsArticle']),
+  // },
   methods: {
-    ...mapActions(['setTags']),
+    // ...mapActions(['setTags']),
     pageChange (e) {
       this.limit = `${(e-1)*this.len},${this.len}`
       this.loadData()
@@ -93,14 +93,15 @@ export default {
       this.loadData()
     },
     loadData () {
-      this.Util.request.doPost('api/tags', {m:2,tag:this.only,order:this.order=='watch'?'utime':'watch',limit:this.limit},(res)=>{
-        this.onlyData = this.order=='watch'?this.Util.commons.formatArticles(res.a):res.a
-        this.count = res.count.c
-      },err=>console.logerr)
+    //   this.Util.request.doPost('api/tags', {m:2,tag:this.only,order:this.order=='watch'?'utime':'watch',limit:this.limit},(res)=>{
+    //     this.onlyData = this.order=='watch'?this.Util.commons.formatArticles(res.a):res.a
+    //     this.count = res.count.c
+    //   },err=>console.logerr)
     },
     show (d) {
-      d._watch += 1
-      this.$router.push({path: 'article', query: {id: d._id}})
+      d.watch += 1
+      this.$store.commit('article/SET_CUR_ARTICLE', d)
+      this.$router.push({path: 'article', query: {id: d.id}})
     }
   }
 }

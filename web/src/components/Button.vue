@@ -4,8 +4,9 @@
   </div>
 </template>
 <script>
-import { mapState } from "vuex"
+import { mapGetters } from "vuex"
 import "../assets/themes/Button.scss"
+import varyColor from '@/utils/varyColor'
 export default {
   props: {
     text: { type: String, default: '', required: false },
@@ -15,15 +16,15 @@ export default {
     disabled: { type: Boolean, default: false, required: false },
   },
   computed: {
-    ...mapState(['Colors'])
+    ...mapGetters(['Colors'])
   },
   methods: {
     bColor() { // 避免频繁调用 VaryColor
       if(!this.Colors[this.color]) {
         this.Colors[this.color] = {
           '--bColor': this.color,
-          '--h_bColor': this.Util.varyColor.darken(this.color, 0.1),
-          '--b_bColor': this.Util.varyColor.darken(this.color, 0.4),
+          '--h_bColor': varyColor.darken(this.color, 0.1),
+          '--b_bColor': varyColor.darken(this.color, 0.4),
         }
       }
       return this.Colors[this.color]

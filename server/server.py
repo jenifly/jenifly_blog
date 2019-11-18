@@ -1,31 +1,66 @@
+import aioredis
+import aiomysql
+
 import tornado.web
-import tornado.ioloop
 import tornado.options
-import tornado.httpserver
-import config
-import torndb
 
+from functools import partial
+from typing import (Any, List, Type, Dict, Awaitable)
+
+from tornado.ioloop import IOLoop
 from tornado.options import define, options
-from tornado.web import RequestHandler
-from urls import handlers
+from tornado.web import Application
 
-define("port", type=int, default=2266, help="run server on the give port")
-		
-class Application(tornado.web.Application):
-	def __init__(self, *args, **kwargs):
-		super(Application, self).__init__(*args, **kwargs)
-		self.db = torndb.Connection(**config.mysql_options)
+try:
+    import asyncio
+    import uvloop
 
-def main():
-	options.log_file_prefix = config.log_path
-	options.logging = config.log_level
-	tornado.options.parse_command_line()
-	app = Application(
-		    handlers, **config.settings
-		)
-	http_server = tornado.httpserver.HTTPServer(app)
-	http_server.listen(options.port)
-	tornado.ioloop.IOLoop.current().start()
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+except ImportError:
+    pass
+
+from utils.mysql import Mysql
+from handlers import ApiHandler
+from config import log_path, log_level, settings, mysql_options, redis_options
+
+
+define('port', type=int, default=2266)
+
+
+class RestfulApp(Application):
+    def __init__(
+        self,
+        default_host: str = None,
+        transforms: List[Type['OutputTransform']] = None,
+        db_pool: Dict[str, Awaitable] = None,
+        **settings: Any
+    ) -> None:
+        if isinstance(db_pool, dict):
+            for name, pool in db_pool.items():
+                setattr(ApiHandler, name, pool)
+        _handlers = []
+        for handler in ApiHandler.__subclasses__():
+            if hasattr(handler, 'route'):
+                _handlers.append((handler.route, handler))
+                del handler.route
+        super().__init__(_handlers, default_host, transforms, **settings)
+
+
+async def main() -> None:
+    options.log_file_prefix = log_path
+    options.logging = log_level
+    tornado.options.parse_command_line()
+    db_pool = {
+        'mysql': Mysql(await aiomysql.create_pool(**mysql_options)),
+        'redis': await aioredis.create_redis_pool(**redis_options)
+    }
+    app = RestfulApp(db_pool=db_pool, **settings)
+    app.listen(options.port)
+
 
 if __name__ == '__main__':
-	main()
+    # io_loop = IOLoop.current()
+    # io_loop.add_callback(main)
+    # io_loop.start()
+    asyncio.ensure_future(main())
+    asyncio.get_event_loop().run_forever()

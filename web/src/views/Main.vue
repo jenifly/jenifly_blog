@@ -3,31 +3,31 @@
   <header>
     <div class="unit-head">
       <div class="unit-inner unit-head-inner">
-        <h1 class="h2 entry-title">主页<span class="switched" @click="articles={};order=='watch'?order='utime':order='watch'">Order by {{order.replace('u','')}}</span></h1>
-      </div><!-- unit-inner -->
-    </div><!-- unit-head -->
+        <h1 class="h2 entry-title">主页<span class="switched" @click="$store.commit('article/SET_ORDER', order=='watch'?'utime':'watch')">Order by {{order=='watch'?'time':'watch'}}</span></h1>
+      </div>
+    </div>
   </header>
 
   <div class="bd">
     <div class="entry-content">
-      <div v-if="order=='watch'" v-for="(v, k) in articles">
+      <div v-if="order=='utime'" v-for="(v, k) in alist">
         <h2>{{k.replace('-','')}}</h2>
         <div v-for="(y, x) in v">
           <h3>{{x}}</h3>
           <ul >
             <li v-for="z in y" @click="show(z)">
-              <span>{{z._stime }}</span> &raquo;
-              <a>{{ z._title }}</a>
+              <span>{{ z.stime }}</span> &raquo;
+              <a>{{ z.title }}</a>
             </li>
           </ul>
         </div>
       </div>
-      <ul v-if="order=='utime'">
-        <li @click="show(i)" v-for="i in articles"><a>{{i._title}}</a><span style="float:right;font-size:14px">watch:{{i._watch}}</span></li>
+      <ul v-if="order=='watch'">
+        <li @click="show(i)" v-for="i in alist"><a>{{i.title}}</a><span style="float:right;font-size:14px">watch:{{i.watch}}</span></li>
       </ul>
-      <Page :count="count" :len="len" :order="order" @pageChange="pageChange"/>
-    </div><!-- entry-content -->
-  </div><!-- bd -->
+      <Page :count="$store.getters.total" :len="limit" :order="order" @pageChange="pageChange"/>
+    </div>
+  </div>
 
   <footer class="unit-foot">
     <div class="unit-inner unit-foot-inner">
@@ -40,36 +40,30 @@
 </template>
 <script>
 import Page from '@/components/Page'
+import { mapGetters } from 'vuex'
 export default {
   components: { Page },
+  computed: {
+    ...mapGetters(['alist', 'order'])
+  },
   data () {
     return {
-      articles: {},
-      count: 0,
-      len: 10,
-      limit: '',
-      order: '',
+      limit: 10,
+      start: 0,
     }
-  },
-  created () {
-    this.limit = `0,${this.len}`
-    this.order = 'watch'
-    this.loadData()
   },
   methods: {
     pageChange (e) {
-      this.limit = `${(e-1)*this.len},${this.len}`
+      this.start = (e-1) * this.limit
       this.loadData()
     },
-    loadData() {
-      this.Util.request.doPost('api/article', {m:0, t:this.order=='watch'?'utime':'watch',l:this.limit},(res)=>{
-        this.articles = this.order=='watch'?this.Util.commons.formatArticles(res.a):res.a
-        this.count = res.c.c
-      },err=>console.logerr)
-    },
     show (d) {
-      d._watch += 1
-      this.$router.push({path: 'article', query: {id: d._id}})
+      d.watch += 1
+      this.$store.commit('article/SET_CUR_ARTICLE', d)
+      this.$router.push({path: 'article', query: {id: d.id}})
+    },
+    loadData() {
+      this.$store.dispatch('article/list', {s: this.start, l: this.limit, o: this.order})
     }
   }
 }

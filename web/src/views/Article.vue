@@ -1,28 +1,27 @@
 <template>
 <div class="content">
-  <div v-if="!full" class="title">发布时间：{{article._utime}} &nbsp;&nbsp;&nbsp;热度：{{article._watch}} ℃</div>
+  <div v-if="!full" class="title">发布时间：{{article.utime?article.utime.replace('T', ' '):''}} &nbsp;&nbsp;&nbsp;热度：{{article.watch}} ℃</div>
   <div class="e">
-    <mavon-editor @fullScreen="fullScreen" id="show" :class="['show', full?'show_full':'']" :toolbars="toolbars" :shortCut="false" :boxShadow="false" :editable="false" :subfield="false" defaultOpen="preview" v-model="article._content"/>
+    <mavon-editor @fullScreen="fullScreen" id="show" :class="['show', full?'show_full':'']" :toolbars="toolbars" :shortCut="false" :boxShadow="false" :editable="false" :subfield="false" defaultOpen="preview" v-model="article.content"/>
   </div>
   <div class="r" :style="{top:w?0:top+'px',height:w?'auto':'100%'}">
     <div style="padding:25px">
         <h4>Tags</h4>
         <div class="tag_box" id="ss">
-          <Button @click="$router.push({name:'tags',params:{tagName:t._text}})" v-for="t in tags" :text="t._text" :count="t._count"/>
+          <Button @click="$router.push({name:'tags',params:{tagName:t._text}})" v-for="t in $store.getters.tag.tags.slice(0, 6)" :text="t.text" :count="t.count"/>
         </div>
       <div>
         <h4>Related</h4>
         <ul>
-          <li @click="show(z)" v-for="z in articleWatch"><a>{{ z._stime.split(',')[0] }} &raquo; {{ z._title }}</a></li>
+          <li @click="show(z)" v-for="z in $store.getters.olist.watch"><a>{{ z.stime }} <br/>&nbsp;&raquo; {{ z.title }}</a></li>
         </ul>
       </div>
       <div>
         <h4>Lately</h4>
         <ul>
-          <li @click="show(z)" v-for="z in articleTime"><a>{{ z._stime.split(',')[0] }} &raquo; {{ z._title }}</a></li>
+          <li @click="show(z)" v-for="z in $store.getters.olist.time"><a>{{ z.stime }} <br/>&nbsp;&raquo; {{ z.title }}</a></li>
         </ul>
       </div>
-      
     </div>
   </div>
 </div>
@@ -43,22 +42,14 @@ export default {
       top: 0,
       height: 0,
       s_width: 0,
+      tags: [],
+      articleWatch: 0,
+      articleTime: ''
     }
-  },
-  watch:{
-    $route(to,from){
-      if(to.name == 'article') {
-        this.article = {}
-        this.loadData()}
-      }
   },
   activated () {
     this.height = window.innerHeight
     this.s_height(this)
-    if(!this.tags) this.setTags()
-    if(!this.articleTime) this.setArticleTime(6)
-    if(!this.articleWatch) this.setArticleWatch(6)
-    if(!this.$route.query.id) return this.$router.replace({path:'error',query:{status_code: '405'}})
     this.loadData()
   },
   mounted () {
@@ -70,7 +61,6 @@ export default {
     }
   },
   computed:{
-    ...mapState(['tags','articleTime', 'articleWatch']),
     w () {
       return this.s_width < 1040
     },
@@ -79,15 +69,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setTags','setArticleTime', 'setArticleWatch']),
+    // ...mapActions(['setTags','setArticleTime', 'setArticleWatch']),
     loadData () {
+      this.article = this.$store.getters.article
       document.body.scrollTop = 0
       document.documentElement.scrollTop = 0
-      this.Util.request.doPost('api/article', {m:1,id:this.$route.query.id}, (res)=>{
-        if(res.msg == 0) return this.$router.replace({path: 'error', query: {status_code:404}})
-        document.title = res._title
-        this.article = res
-      }, err => {this.$router.replace({path: 'error', query: {status_code: err.response.status==500?404:err.response.status}})})
     },
     show (d) {
       d._watch += 1

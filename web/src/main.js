@@ -1,21 +1,16 @@
 import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import App from '@/App.vue'
+import router from '@/router'
+import store from '@/store'
+
+import '@/router/prepare'
 
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 
-import './assets/themes/style.scss'
-import Util from '../src/util'
-
-router.beforeEach((to, from, next) => {
-  window.document.title = to.meta.title
-  next()
-})
+import '@/assets/themes/style.scss'
 
 Vue.config.productionTip = false
-Vue.prototype.Util = Util
 Vue.use(mavonEditor)
 
 new Vue({

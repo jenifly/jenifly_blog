@@ -1,3 +1,9 @@
+const path = require('path')
+
+function resolve(dir) {
+  return path.join(__dirname, dir)
+}
+
 module.exports = {
   lintOnSave: false,
   devServer: {
@@ -7,25 +13,40 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: 'http://192.168.1.66:2266',
+        target: 'http://jenifly.xyz:2266',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/api'
         }
       },
-      '/image': {
-        target: 'http://192.168.1.66:2266',
+      
+      '/res': {
+        target: 'http://jenifly.xyz:9926',
         changeOrigin: true,
         pathRewrite: {
-          '^/image': '/image'
+          '^/res': '/res'
         }
       },
-      '/tools': {
-        target: 'http://192.168.1.66:2266',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/tools': '/tools'
-        }
+      // '/tools': {
+      //   target: 'http://jenifly.xyz:2266',
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/tools': '/tools'
+      //   },
+      //   '/image': {
+      //     target: 'http://jenifly.xyz:2266',
+      //     changeOrigin: true,
+      //     pathRewrite: {
+      //       '^/image': '/image'
+      //     }
+      //   },
+      // }
+    }
+  },
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@': resolve('src')
       }
     }
   }
